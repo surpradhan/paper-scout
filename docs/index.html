@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Paper Scout</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --bg:       #f7f3ed;
+      --surface:  #ede8e0;
+      --ink:      #1c1917;
+      --ink-2:    #57534e;
+      --ink-3:    #a8a29e;
+      --accent:   #b45309;
+      --accent-l: #fef3c7;
+      --rule:     #d6cfc5;
+      --green:    #166534;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--ink);
+      font-family: 'Inter', sans-serif;
+      min-height: 100vh;
+    }
+
+    /* ── Layout ── */
+    .page { max-width: 860px; margin: 0 auto; padding: 80px 32px 100px; }
+
+    /* ── Hero ── */
+    .hero { margin-bottom: 80px; }
+
+    .eyebrow {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .eyebrow::before {
+      content: '';
+      display: block;
+      width: 28px;
+      height: 1px;
+      background: var(--accent);
+    }
+
+    .hero h1 {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: clamp(52px, 8vw, 88px);
+      font-weight: 900;
+      line-height: 0.95;
+      letter-spacing: -2px;
+      color: var(--ink);
+      margin-bottom: 28px;
+    }
+    .hero h1 em {
+      font-style: italic;
+      color: var(--accent);
+    }
+
+    .hero-body {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: end;
+      gap: 40px;
+    }
+    .hero p {
+      font-size: 17px;
+      line-height: 1.7;
+      color: var(--ink-2);
+      max-width: 440px;
+    }
+    .hero-cta {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 11px 24px;
+      font-size: 13px;
+      font-weight: 600;
+      text-decoration: none;
+      border-radius: 3px;
+      transition: all 0.15s;
+      font-family: 'Inter', sans-serif;
+    }
+    .btn-ink {
+      background: var(--ink);
+      color: var(--bg);
+    }
+    .btn-ink:hover { background: #3d3733; }
+
+    /* ── Divider ── */
+    hr {
+      border: none;
+      border-top: 1px solid var(--rule);
+      margin: 0 0 64px;
+    }
+
+    /* ── Section header ── */
+    .section { margin-bottom: 64px; }
+    .section-head {
+      display: flex;
+      align-items: baseline;
+      gap: 16px;
+      margin-bottom: 32px;
+    }
+    .section-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--ink);
+    }
+    .section-num {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      color: var(--ink-3);
+    }
+
+    /* ── Pipeline ── */
+    .pipeline {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      border: 1px solid var(--rule);
+      border-radius: 6px;
+      overflow: hidden;
+    }
+    .pipe-step {
+      display: grid;
+      grid-template-columns: 48px 1fr auto;
+      align-items: center;
+      gap: 20px;
+      padding: 18px 24px;
+      border-bottom: 1px solid var(--rule);
+      background: #fff;
+      transition: background 0.15s;
+    }
+    .pipe-step:last-child { border-bottom: none; }
+    .pipe-step:hover { background: var(--accent-l); }
+
+    .pipe-num {
+      font-family: 'Playfair Display', serif;
+      font-size: 28px;
+      font-weight: 900;
+      color: var(--rule);
+      line-height: 1;
+      text-align: center;
+    }
+    .pipe-step:hover .pipe-num { color: var(--accent); }
+
+    .pipe-body {}
+    .pipe-name {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--ink);
+      margin-bottom: 3px;
+    }
+    .pipe-desc {
+      font-size: 12px;
+      color: var(--ink-2);
+      line-height: 1.4;
+    }
+    .pipe-tag {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      color: var(--accent);
+      background: var(--accent-l);
+      padding: 3px 8px;
+      border-radius: 3px;
+      white-space: nowrap;
+    }
+
+    /* ── Features ── */
+    .features {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1px;
+      background: var(--rule);
+      border: 1px solid var(--rule);
+      border-radius: 6px;
+      overflow: hidden;
+    }
+    .feature {
+      background: #fff;
+      padding: 28px 24px;
+    }
+    .feature-num {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      color: var(--ink-3);
+      margin-bottom: 14px;
+    }
+    .feature-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--ink);
+      margin-bottom: 8px;
+    }
+    .feature-desc {
+      font-size: 12px;
+      color: var(--ink-2);
+      line-height: 1.6;
+    }
+
+    /* ── Setup ── */
+    .setup {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      border: 1px solid var(--rule);
+      border-radius: 6px;
+      overflow: hidden;
+    }
+    .setup-step {
+      display: grid;
+      grid-template-columns: 32px 1fr;
+      gap: 20px;
+      align-items: start;
+      padding: 20px 24px;
+      border-bottom: 1px solid var(--rule);
+      background: #fff;
+    }
+    .setup-step:last-child { border-bottom: none; }
+
+    .setup-num {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: var(--ink);
+      color: var(--bg);
+      font-size: 11px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 2px;
+      flex-shrink: 0;
+    }
+    .setup-label {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--ink);
+      margin-bottom: 8px;
+    }
+    .code-block {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      background: var(--surface);
+      border: 1px solid var(--rule);
+      border-radius: 4px;
+      padding: 10px 14px;
+      color: var(--green);
+    }
+    .code-block .dim { color: var(--ink-3); }
+    .env-block {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      background: var(--surface);
+      border: 1px solid var(--rule);
+      border-radius: 4px;
+      padding: 10px 14px;
+    }
+    .env-key { color: var(--accent); }
+    .env-val { color: var(--ink-3); }
+
+    /* ── Footer ── */
+    .footer {
+      padding-top: 48px;
+      border-top: 1px solid var(--rule);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .footer-left {
+      font-family: 'Playfair Display', serif;
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--ink);
+    }
+    .footer-left em { font-style: italic; color: var(--accent); }
+    .footer-right {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      color: var(--ink-3);
+      letter-spacing: 0.05em;
+    }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <!-- Hero -->
+  <div class="hero">
+    <div class="eyebrow">Research Paper Triage Agent</div>
+    <h1>Paper<br><em>Scout.</em></h1>
+    <div class="hero-body">
+      <p>Search arXiv, score every result with an LLM, and surface the papers that actually matter to you.</p>
+      <div class="hero-cta">
+        <a href="https://github.com" class="btn btn-ink">View on GitHub ↗</a>
+      </div>
+    </div>
+  </div>
+
+  <hr>
+
+  <!-- Pipeline -->
+  <div class="section">
+    <div class="section-head">
+      <span class="section-title">How it works</span>
+      <span class="section-num">5 stages</span>
+    </div>
+    <div class="pipeline">
+      <div class="pipe-step">
+        <div class="pipe-num">1</div>
+        <div class="pipe-body">
+          <div class="pipe-name">Search</div>
+          <div class="pipe-desc">Fetch up to 20 papers from arXiv sorted by relevance</div>
+        </div>
+        <div class="pipe-tag">arxiv_search()</div>
+      </div>
+      <div class="pipe-step">
+        <div class="pipe-num">2</div>
+        <div class="pipe-body">
+          <div class="pipe-name">Fast Filter</div>
+          <div class="pipe-desc">Batch score with Llama 3.1 8B — drop anything below 4.0 in one call</div>
+        </div>
+        <div class="pipe-tag">quick_filter()</div>
+      </div>
+      <div class="pipe-step">
+        <div class="pipe-num">3</div>
+        <div class="pipe-body">
+          <div class="pipe-name">Detail Score</div>
+          <div class="pipe-desc">Kimi K2 rates each paper on relevance, novelty, and clarity</div>
+        </div>
+        <div class="pipe-tag">llm_summarize()</div>
+      </div>
+      <div class="pipe-step">
+        <div class="pipe-num">4</div>
+        <div class="pipe-body">
+          <div class="pipe-name">Recency Boost</div>
+          <div class="pipe-desc">Papers published within 6 months get +1.0, within a year +0.5</div>
+        </div>
+        <div class="pipe-tag">recency_boost()</div>
+      </div>
+      <div class="pipe-step">
+        <div class="pipe-num">5</div>
+        <div class="pipe-body">
+          <div class="pipe-name">Re-rank</div>
+          <div class="pipe-desc">Relative scoring pass compares candidates against each other, returns top N</div>
+        </div>
+        <div class="pipe-tag">rerank()</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Features -->
+  <div class="section">
+    <div class="section-head">
+      <span class="section-title">Why it's different</span>
+    </div>
+    <div class="features">
+      <div class="feature">
+        <div class="feature-num">01</div>
+        <div class="feature-title">Two-model pipeline</div>
+        <div class="feature-desc">A fast cheap model culls the obvious misses. A strong model does the real work. No wasted tokens.</div>
+      </div>
+      <div class="feature">
+        <div class="feature-num">02</div>
+        <div class="feature-title">Query-aware scoring</div>
+        <div class="feature-desc">Every score and summary is grounded in your specific query — not generic citation counts or popularity.</div>
+      </div>
+      <div class="feature">
+        <div class="feature-num">03</div>
+        <div class="feature-title">Gradio UI</div>
+        <div class="feature-desc">Live progress, score threshold and top-N sliders, and a full results table in the browser.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Setup -->
+  <div class="section">
+    <div class="section-head">
+      <span class="section-title">Quick start</span>
+    </div>
+    <div class="setup">
+      <div class="setup-step">
+        <div class="setup-num">1</div>
+        <div>
+          <div class="setup-label">Install dependencies</div>
+          <div class="code-block">pip install <span class="dim">-r requirements.txt</span></div>
+        </div>
+      </div>
+      <div class="setup-step">
+        <div class="setup-num">2</div>
+        <div>
+          <div class="setup-label">Add your Groq API key</div>
+          <div class="env-block"><span class="env-key">GROQ_API_KEY</span>=<span class="env-val">your_key_here</span></div>
+        </div>
+      </div>
+      <div class="setup-step">
+        <div class="setup-num">3</div>
+        <div>
+          <div class="setup-label">Launch the UI</div>
+          <div class="code-block">python app.py</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div class="footer">
+    <div class="footer-left">Paper<em>Scout</em></div>
+    <div class="footer-right">groq · arxiv · gradio · zero infra</div>
+  </div>
+
+</div>
+</body>
+</html>
