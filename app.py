@@ -40,6 +40,9 @@ css = """
 
 body, gradio-app, .gradio-container, footer { background: #f7f3ed !important; }
 
+/* prevent viewport-fill stretching the layout */
+.gradio-container > .main > .wrap { flex-grow: 0 !important; min-height: 0 !important; }
+
 /* virtual table */
 .virtual-table-viewport, .table-wrap, .table-container { background: #ffffff !important; }
 .virtual-row, .row-odd { background: #ffffff !important; color: #1c1917 !important; }
@@ -50,7 +53,11 @@ button.svelte-8prmba, .disable_click {
     border-color: #ede8e0 !important;
 }
 
-.gradio-container { max-width: 900px !important; }
+.gradio-container { max-width: 1600px !important; padding: 0 24px !important; }
+
+/* tighten search row vertical alignment */
+#status-box textarea { min-height: 0 !important; }
+
 
 /* blocks */
 .block, .gr-block, .gr-form, .gr-box,
@@ -140,20 +147,24 @@ footer { display: none !important; }
 
 #paper-scout-title {
     font-family: 'Playfair Display', Georgia, serif !important;
-    font-size: 48px !important;
+    font-size: 42px !important;
     font-weight: 900 !important;
     letter-spacing: -1px !important;
     line-height: 1 !important;
     color: #1c1917 !important;
-    margin-bottom: 6px !important;
+    margin-bottom: 4px !important;
 }
 #paper-scout-title em { color: #b45309; font-style: italic; }
 #paper-scout-sub {
     color: #57534e !important;
-    font-size: 15px !important;
-    margin-bottom: 20px !important;
-    line-height: 1.6 !important;
+    font-size: 13px !important;
+    margin-bottom: 12px !important;
+    line-height: 1.5 !important;
 }
+
+/* tighten Gradio's default top padding */
+.gradio-container > .main > .wrap > .gap { gap: 8px !important; }
+.gradio-container { padding-top: 24px !important; }
 """
 
 def search_papers(
@@ -217,29 +228,32 @@ with gr.Blocks(title="Paper Scout") as demo:
     gr.HTML('<div id="paper-scout-title">Paper<em>Scout.</em></div>')
     gr.HTML('<div id="paper-scout-sub">Search arXiv, score every result with an LLM, and surface the papers that actually matter to you.</div>')
 
-    query_box = gr.Textbox(
-        label="Research query",
-        placeholder="e.g. CRAG techniques for RAG",
-    )
-    search_btn = gr.Button("Search", variant="primary")
+    with gr.Row(equal_height=True):
+        query_box = gr.Textbox(
+            label="Research query",
+            placeholder="e.g. CRAG techniques for RAG",
+            lines=2,
+            scale=4,
+        )
+        with gr.Column(scale=1, min_width=160):
+            search_btn = gr.Button("Search", variant="primary", size="lg")
+            status_box = gr.Textbox(label="", interactive=False, elem_id="status-box", lines=2)
 
     with gr.Row():
         top_n_slider = gr.Slider(1, 20, value=TOP_N, step=1, label="Top N results")
         threshold_slider = gr.Slider(1.0, 10.0, value=5.0, step=0.5, label="Min score threshold")
-
-    with gr.Accordion("Score weights", open=False):
-        with gr.Row():
-            w_relevance = gr.Slider(1, 10, value=5, step=1, label="Relevance weight")
-            w_novelty   = gr.Slider(1, 10, value=3, step=1, label="Novelty weight")
-            w_clarity   = gr.Slider(1, 10, value=2, step=1, label="Clarity weight")
-
-    status_box = gr.Textbox(label="Status", interactive=False, elem_id="status-box")
+        with gr.Accordion("Score weights", open=False):
+            with gr.Row():
+                w_relevance = gr.Slider(1, 10, value=5, step=1, label="Relevance weight")
+                w_novelty   = gr.Slider(1, 10, value=3, step=1, label="Novelty weight")
+                w_clarity   = gr.Slider(1, 10, value=2, step=1, label="Clarity weight")
 
     results_table = gr.Dataframe(
         headers=["Rank", "Score", "Title", "Authors", "Published", "Summary", "Why it matters", "Link"],
         datatype=["str", "str", "str", "str", "str", "str", "str", "markdown"],
         wrap=True,
         interactive=False,
+        max_height=700,
     )
 
     inputs = [query_box, top_n_slider, threshold_slider, w_relevance, w_novelty, w_clarity]
