@@ -176,7 +176,8 @@ def search_papers(
     w_clarity: float,
 ):
     if not query.strip():
-        return "Please enter a search query.", []
+        yield "Please enter a search query.", []
+        return
 
     yield "Searching arXiv...", []
 
@@ -232,12 +233,12 @@ with gr.Blocks(title="Paper Scout") as demo:
         query_box = gr.Textbox(
             label="Research query",
             placeholder="e.g. CRAG techniques for RAG",
-            lines=2,
+            lines=1,
             scale=4,
         )
         with gr.Column(scale=1, min_width=160):
             search_btn = gr.Button("Search", variant="primary", size="lg")
-            status_box = gr.Textbox(label="", interactive=False, elem_id="status-box", lines=2)
+            status_box = gr.Textbox(label="", show_label=False, interactive=False, elem_id="status-box", lines=2)
 
     with gr.Row():
         top_n_slider = gr.Slider(1, 20, value=TOP_N, step=1, label="Top N results")

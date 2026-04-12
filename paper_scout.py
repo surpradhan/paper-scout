@@ -104,11 +104,11 @@ def quick_filter(papers: list[Paper], query: str) -> list[Paper]:
 # ── Stage 2 · detailed multi-dim scoring ─────────────────────────────────────
 
 class DetailedScore(BaseModel):
-    relevance: float
-    novelty:   float
-    clarity:   float
-    summary:   str
-    why:       str
+    relevance: float = 0.0
+    novelty:   float = 0.0
+    clarity:   float = 0.0
+    summary:   str   = ""
+    why:       str   = ""
 
 DETAIL_PROMPT = """\
 You are a research assistant. Given a user query and a paper, respond with a JSON object with exactly these fields:
