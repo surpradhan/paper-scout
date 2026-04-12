@@ -87,6 +87,7 @@ def quick_filter(papers: list[Paper], query: str) -> list[Paper]:
     msg = client.chat.completions.create(
         model=FAST_MODEL,
         max_tokens=512,
+        temperature=0,
         messages=[{"role": "user", "content": QUICK_FILTER_PROMPT.format(
             query=query, papers=papers_text
         )}],
@@ -129,6 +130,7 @@ def llm_summarize(paper: Paper, query: str, retries: int = 3) -> Paper:
             msg = client.chat.completions.create(
                 model=DETAIL_MODEL,
                 max_tokens=300,
+                temperature=0,
                 messages=[{"role": "user", "content": DETAIL_PROMPT.format(
                     query=query, title=paper.title, abstract=paper.abstract
                 )}],
@@ -197,6 +199,7 @@ def rerank(papers: list[Paper], query: str) -> list[Paper]:
         msg = client.chat.completions.create(
             model=DETAIL_MODEL,
             max_tokens=256,
+            temperature=0,
             messages=[{"role": "user", "content": RERANK_PROMPT.format(
                 query=query, papers=papers_text
             )}],
@@ -206,7 +209,8 @@ def rerank(papers: list[Paper], query: str) -> list[Paper]:
         results = {r["index"]: float(r["score"]) for r in data.get("results", [])}
         for i, paper in enumerate(papers):
             if i in results:
-                paper.score = results[i]
+                # Both scores are on the same 1-10 scale (RERANK_PROMPT asks for 1-10)
+                paper.score = 0.7 * paper.score + 0.3 * results[i]
     except (json.JSONDecodeError, KeyError, TypeError, BadRequestError):
         pass  # fallback: keep existing scores
     return papers
