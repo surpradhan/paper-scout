@@ -209,7 +209,7 @@ def rerank(papers: list[Paper], query: str) -> list[Paper]:
         results = {r["index"]: float(r["score"]) for r in data.get("results", [])}
         for i, paper in enumerate(papers):
             if i in results:
-                paper.score = results[i]
+                paper.score = 0.7 * paper.score + 0.3 * results[i]
     except (json.JSONDecodeError, KeyError, TypeError, BadRequestError):
         pass  # fallback: keep existing scores
     return papers
