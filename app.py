@@ -2,6 +2,7 @@
 app.py — Gradio UI for Paper Scout
 """
 
+import html
 import os
 from dotenv import load_dotenv
 load_dotenv()
@@ -145,9 +146,13 @@ footer { display: none !important; }
 """
 
 def _paper_card(rank: int, p) -> str:
-    authors_str = ", ".join(p.authors)
+    authors_str = html.escape(", ".join(p.authors))
     date_str = p.published.strftime("%Y-%m")
-    score_pct = int(p.score / 10 * 100)
+    score_pct = min(100, int(p.score / 10 * 100))
+    title = html.escape(p.title)
+    # Only allow https:// links; fall back to plain text if the scheme is unexpected
+    safe_url = p.url if p.url.startswith("https://") else ""
+    url_display = html.escape(p.url)
     return f"""
 <div style="
     border: 1px solid #d6cfc5;
@@ -196,7 +201,7 @@ def _paper_card(rank: int, p) -> str:
         color: #1c1917;
         line-height: 1.35;
         margin-bottom: 6px;
-    ">{p.title}</div>
+    ">{title}</div>
 
     <!-- meta -->
     <div style="
@@ -205,7 +210,7 @@ def _paper_card(rank: int, p) -> str:
         color: #a8a29e;
         margin-bottom: 16px;
     ">{authors_str} &nbsp;·&nbsp; {date_str} &nbsp;·&nbsp;
-        <a href="{p.url}" target="_blank" style="color:#b45309; text-decoration:none;">{p.url}</a>
+        <a href="{html.escape(safe_url)}" target="_blank" style="color:#b45309; text-decoration:none;">{url_display}</a>
     </div>
 
     <!-- summary -->
@@ -224,7 +229,7 @@ def _paper_card(rank: int, p) -> str:
             color: #57534e;
             line-height: 1.65;
             font-family: 'Inter', sans-serif;
-        ">{p.summary}</div>
+        ">{html.escape(p.summary)}</div>
     </div>
 
     <!-- why it matters -->
@@ -248,7 +253,7 @@ def _paper_card(rank: int, p) -> str:
             color: #1c1917;
             line-height: 1.65;
             font-family: 'Inter', sans-serif;
-        ">{p.why}</div>
+        ">{html.escape(p.why)}</div>
     </div>
 </div>"""
 
