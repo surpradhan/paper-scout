@@ -1,6 +1,6 @@
 # Paper Scout
 
-Search arXiv and get LLM-ranked, summarized results — fast.
+Search arXiv and get LLM-ranked, summarized results - fast.
 
 ## How it works
 
@@ -25,10 +25,10 @@ flowchart LR
 
 ## Stack
 
-- **arXiv API** — paper retrieval
-- **Groq + Llama 3.1 8B** — fast batch filter (Stage 1)
-- **Groq + Kimi K2** — detailed scoring and summarization (Stage 2)
-- **Gradio** — web UI
+- **arXiv API** - paper retrieval
+- **Groq + Llama 3.1 8B** - fast batch filter (Stage 1)
+- **Groq + Kimi K2** - detailed scoring and summarization (Stage 2)
+- **Gradio** - web UI
 
 ## Setup
 
